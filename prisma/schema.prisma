@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Term {
+  id   Int    @id @default(autoincrement())
+  text String
+
+  senses Sense[]
+}
+
+model Sense {
+  id         Int       @id @default(autoincrement())
+  termId     Int
+  type       SenseType
+  definition String    @db.Text
+
+  term     Term           @relation(fields: [termId], references: [id])
+  examples SenseExample[]
+}
+
+model SenseExample {
+  id              Int    @id @default(autoincrement())
+  senseId         Int
+  exampleSentence String @db.Text
+
+  sense Sense @relation(fields: [senseId], references: [id])
+}
+
+enum SenseType {
+  NOUN
+  VERB
+  ADJECTIVE
+  ADVERB
+  PRONOUN
+  PREPOSITION
+  CONJUNCTION
+  INTERJECTION
+  PHRASAL_VERB
+  IDIOM
+  PHRASE
+}

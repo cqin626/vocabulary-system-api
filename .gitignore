@@ -9,3 +9,6 @@ dist/
 
 # Environment variables
 .env
+
+# Prisma
+/src/generated/prisma
