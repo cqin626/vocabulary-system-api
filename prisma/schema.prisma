@@ -9,7 +9,7 @@ datasource db {
 
 model Term {
   id   Int    @id @default(autoincrement())
-  text String
+  text String @unique
 
   senses Sense[]
 }
@@ -20,7 +20,7 @@ model Sense {
   type       SenseType
   definition String    @db.Text
 
-  term     Term           @relation(fields: [termId], references: [id])
+  term     Term           @relation(fields: [termId], references: [id], onDelete: Cascade)
   examples SenseExample[]
 }
 
@@ -29,7 +29,7 @@ model SenseExample {
   senseId         Int
   exampleSentence String @db.Text
 
-  sense Sense @relation(fields: [senseId], references: [id])
+  sense Sense @relation(fields: [senseId], references: [id], onDelete: Cascade)
 }
 
 enum SenseType {
