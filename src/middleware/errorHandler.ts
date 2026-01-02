@@ -3,6 +3,7 @@ import { sendError } from "../shared/utils/responseUtils.js";
 import { Request, Response, NextFunction } from "express";
 import { getFormattedZodIssue } from "../shared/utils/zodErrorUtils.js";
 import { HTTPError } from "../shared/errors/baseError.js";
+import { logger } from "./logger.js";
 
 export function errorHandler(
   err: unknown,
@@ -10,7 +11,6 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  // Add a logger
   if (err instanceof ZodError) {
     const formattedZodIssue = err.issues[0]
       ? getFormattedZodIssue(err.issues[0])
@@ -19,6 +19,7 @@ export function errorHandler(
   } else if (err instanceof HTTPError) {
     return sendError(res, err.message, err.statusCode);
   } else {
+    req.log.error({ err }, "Unhandled Exception");
     return sendError(res, "Internal server error", 500);
   }
 }
