@@ -1,17 +1,18 @@
 import express from "express";
 import routerV1 from "./routes/routeV1.js";
+import { sendError } from "./shared/utils/responseUtils.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
+
+app.use(express.json());
 
 app.use("/api/v1", routerV1);
 
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: {
-      message: "Endpoint not found",
-    },
-  });
+  sendError(res, "Endpoint not found", 404);
 });
+
+app.use(errorHandler);
 
 export default app;
