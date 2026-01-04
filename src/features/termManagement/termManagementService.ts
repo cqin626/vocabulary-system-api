@@ -5,7 +5,7 @@ import {
 import {
   TermNotFoundError,
   InvalidNewTermError,
-} from "../../shared/errors/termError.js";
+} from "../../shared/errors/termErrors.js";
 import { NewTerm } from "../../shared/types/termTypes.js";
 
 export class TermManagementService {

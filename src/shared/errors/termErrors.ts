@@ -1,4 +1,4 @@
-import { ResourceNotFoundError, ConflictError } from "./baseError.js";
+import { ResourceNotFoundError, ConflictError } from "./baseErrors.js";
 
 export class TermNotFoundError extends ResourceNotFoundError {
   constructor(reason: string) {
