@@ -17,13 +17,12 @@ export class AuthRepository {
   }
 
   async userExists(email: string) {
-    const id = await prisma.user.findFirst({
+    const userCount = await prisma.user.count({
       where: {
         email: email,
       },
-      select: { id: true },
     });
-    return !!id;
+    return userCount > 0;
   }
 }
 

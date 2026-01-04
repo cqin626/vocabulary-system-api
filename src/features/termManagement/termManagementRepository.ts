@@ -19,11 +19,10 @@ export class TermManagementRepository {
   }
 
   async termExists(text: string) {
-    const term = await prisma.term.findFirst({
+    const termCount = await prisma.term.count({
       where: { text },
-      select: { id: true },
     });
-    return !!term;
+    return termCount > 0;
   }
 
   async insertTerm(newTerm: NewTerm) {
