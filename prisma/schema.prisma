@@ -8,8 +8,10 @@ datasource db {
 }
 
 model Term {
-  id   Int    @id @default(autoincrement())
-  text String @unique
+  id        Int      @id @default(autoincrement())
+  text      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   senses Sense[]
 }
@@ -19,17 +21,32 @@ model Sense {
   termId     Int
   type       SenseType
   definition String    @db.Text
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   term     Term           @relation(fields: [termId], references: [id], onDelete: Cascade)
   examples SenseExample[]
 }
 
 model SenseExample {
-  id              Int    @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   senseId         Int
-  exampleSentence String @db.Text
+  exampleSentence String   @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   sense Sense @relation(fields: [senseId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
 }
 
 enum SenseType {
