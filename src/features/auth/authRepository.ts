@@ -24,6 +24,19 @@ export class AuthRepository {
     });
     return userCount > 0;
   }
+
+  async getUserPasswordHash(email: string) {
+    return (
+      (
+        await prisma.user.findFirst({
+          where: {
+            email: email,
+          },
+          select: { passwordHash: true },
+        })
+      )?.passwordHash ?? ""
+    );
+  }
 }
 
 export const authRepo = new AuthRepository();

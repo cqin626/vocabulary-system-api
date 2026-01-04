@@ -12,6 +12,14 @@ export class AuthController {
 
     return sendSuccess(res, registeredUser, 201);
   };
+
+  handleLogin = async (req: Request, res: Response) => {
+    const user = UserSchema.parse(req.body);
+
+    //  Temporary implementation
+    const isLoggedIn = await this.service.handleLogin(user);
+    return sendSuccess(res, { result: "User is logged in" }, 200);
+  };
 }
 
 export const authController = new AuthController(authService);

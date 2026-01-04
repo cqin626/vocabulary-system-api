@@ -2,7 +2,7 @@ import { ZodError } from "zod";
 import { sendError } from "../shared/utils/responseUtils.js";
 import { Request, Response, NextFunction } from "express";
 import { getFormattedZodIssue } from "../shared/utils/zodErrorUtils.js";
-import { HTTPError } from "../shared/errors/baseErrors.js";
+import { HTTPError } from "../shared/errors/HTTPErrors.js";
 import { logger } from "./logger.js";
 
 export function errorHandler(

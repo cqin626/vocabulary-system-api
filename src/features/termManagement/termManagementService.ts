@@ -3,9 +3,9 @@ import {
   termManagementRepo,
 } from "./termManagementRepository.js";
 import {
-  TermNotFoundError,
-  InvalidNewTermError,
-} from "../../shared/errors/termErrors.js";
+  ResourceNotFoundError,
+  ConflictError,
+} from "../../shared/errors/HTTPErrors.js";
 import { NewTerm } from "../../shared/types/termTypes.js";
 
 export class TermManagementService {
@@ -14,7 +14,7 @@ export class TermManagementService {
   async getTermByText(text: string) {
     const term = await this.repo.getTermByText(text);
 
-    if (!term) throw new TermNotFoundError("Term not found");
+    if (!term) throw new ResourceNotFoundError("Term not found");
 
     return term;
   }
@@ -27,7 +27,7 @@ export class TermManagementService {
   async insertTerm(newTerm: NewTerm) {
     const termExists = await this.repo.termExists(newTerm.text);
 
-    if (termExists) throw new InvalidNewTermError("Term already exists");
+    if (termExists) throw new ConflictError("Term already exists");
 
     const term = await this.repo.insertTerm(newTerm);
 

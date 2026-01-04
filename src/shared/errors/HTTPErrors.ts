@@ -16,6 +16,12 @@ export class ResourceNotFoundError extends HTTPError {
   }
 }
 
+export class UnauthorizedError extends HTTPError {
+  constructor(reason: string) {
+    super(reason, 401);
+  }
+}
+
 export class ConflictError extends HTTPError {
   constructor(reason: string) {
     super(reason, 409);
