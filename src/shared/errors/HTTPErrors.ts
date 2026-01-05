@@ -22,6 +22,12 @@ export class UnauthorizedError extends HTTPError {
   }
 }
 
+export class ForbiddenError extends HTTPError {
+  constructor(reason: string) {
+    super(reason, 403);
+  }
+}
+
 export class ConflictError extends HTTPError {
   constructor(reason: string) {
     super(reason, 409);

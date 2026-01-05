@@ -4,7 +4,7 @@ import {
   TermManagementService,
   termManagementService,
 } from "./termManagementService.js";
-import { sendSuccess, sendError } from "../../shared/utils/responseUtils.js";
+import { sendSuccess } from "../../shared/utils/responseUtils.js";
 import { NewTermSchema } from "../../shared/types/termTypes.js";
 
 export class TermManagementController {

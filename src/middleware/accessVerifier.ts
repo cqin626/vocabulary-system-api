@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { sendError } from "../shared/utils/responseUtils.js";
 import jwt from "jsonwebtoken";
 import { publicKey, signingAlgo } from "../config/jwtConfig.js";
 import { UserTokenSchema } from "../shared/types/userTypes.js";
+import {
+  UnauthorizedError,
+  ForbiddenError,
+} from "../shared/errors/HTTPErrors.js";
 
 export function verifyAuthentication(
   req: Request,
@@ -12,7 +15,7 @@ export function verifyAuthentication(
   const authHeader = req.headers.authorization;
   const accessToken = authHeader?.split(" ")[1];
 
-  if (!accessToken) return sendError(res, "Authentication is required", 401);
+  if (!accessToken) throw new UnauthorizedError("Authentication is required");
 
   try {
     const payload = jwt.verify(accessToken, publicKey, {
@@ -22,6 +25,6 @@ export function verifyAuthentication(
     req.user = user;
     next();
   } catch (err) {
-    return sendError(res, "Invalid access token", 403);
+    throw new ForbiddenError("Invalid access token");
   }
 }

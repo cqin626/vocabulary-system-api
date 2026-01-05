@@ -2,6 +2,10 @@ import { AuthService, authService } from "./authService.js";
 import { Request, Response } from "express";
 import { UserSchema } from "../../shared/types/userTypes.js";
 import { sendSuccess } from "../../shared/utils/responseUtils.js";
+import {
+  UnauthorizedError,
+  ForbiddenError,
+} from "../../shared/errors/HTTPErrors.js";
 import "dotenv/config";
 
 export class AuthController {
@@ -45,6 +49,46 @@ export class AuthController {
     });
 
     return sendSuccess(res, null, 200);
+  };
+
+  refresh = async (req: Request, res: Response) => {
+    const currentRefreshToken = req.cookies?.refreshToken;
+    if (!currentRefreshToken)
+      throw new UnauthorizedError("Unauthorized to perform refresh");
+
+    // Verify token
+    const verifiedPayload =
+      this.service.verifyRefreshToken(currentRefreshToken);
+
+    // Check if the token was revoked
+    const currentRefreshTokenDetails =
+      await this.service.getRefreshTokenDetails(currentRefreshToken);
+
+    if (currentRefreshTokenDetails?.revoked) {
+      // Anomaly detected, invalidate all tokens from the user in db
+      await this.service.invalidateAllRefreshTokensByUserId(verifiedPayload.id);
+      throw new ForbiddenError(
+        "Revoked token is used. Malicious activity is suspected."
+      );
+    } else {
+      // Invalidate old token
+      await this.service.invalidateRefreshToken(currentRefreshToken);
+
+      // Issue new tokens
+      const { refreshToken: newRefreshToken, expiresAt: refreshExpiresAt } =
+        await this.service.generateRefreshToken(verifiedPayload);
+      const { accessToken, expiresAt: accessExpiresAt } =
+        this.service.generateAccessToken(verifiedPayload);
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENVIRONMENT === "DEV" ? false : true,
+        path: "/api/v1/auth",
+        expires: refreshExpiresAt,
+      });
+      return sendSuccess(res, { accessToken, accessExpiresAt }, 200);
+    }
   };
 }
 

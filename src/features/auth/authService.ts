@@ -3,12 +3,16 @@ import { UserType } from "../../shared/types/userTypes.js";
 import {
   ConflictError,
   UnauthorizedError,
+  ForbiddenError,
 } from "../../shared/errors/HTTPErrors.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import ms from "ms";
-import { privateKey, signingAlgo } from "../../config/jwtConfig.js";
-import { UserTokenType } from "../../shared/types/userTypes.js";
+import { privateKey, publicKey, signingAlgo } from "../../config/jwtConfig.js";
+import {
+  UserTokenType,
+  UserTokenSchema,
+} from "../../shared/types/userTypes.js";
 
 export class AuthService {
   constructor(private readonly repo: AuthRepository) {}
@@ -68,8 +72,27 @@ export class AuthService {
     return { refreshToken, expiresAt };
   }
 
+  async getRefreshTokenDetails(refreshToken: string) {
+    return await this.repo.getRefreshToken(refreshToken);
+  }
+
   async invalidateRefreshToken(refreshToken: string) {
     await this.repo.invalidateRefreshToken(refreshToken);
+  }
+
+  async invalidateAllRefreshTokensByUserId(userId: number) {
+    return await this.repo.invalidateAllRefreshTokensByUserId(userId);
+  }
+
+  verifyRefreshToken(refreshToken: string) {
+    try {
+      const payload = jwt.verify(refreshToken, publicKey, {
+        algorithms: [signingAlgo],
+      });
+      return UserTokenSchema.parse(payload);
+    } catch (err) {
+      throw new ForbiddenError("Invalid or expired refresh token");
+    }
   }
 }
 

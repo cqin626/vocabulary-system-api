@@ -33,6 +33,17 @@ export class AuthRepository {
     });
   }
 
+  async getRefreshToken(token: string) {
+    return await prisma.refreshToken.findFirst({
+      where: { token },
+      select: {
+        token: true,
+        expiresAt: true,
+        revoked: true,
+      },
+    });
+  }
+
   async createRefreshToken(token: string, userId: number, expiresAt: Date) {
     return await prisma.refreshToken.create({
       data: {
@@ -46,6 +57,13 @@ export class AuthRepository {
   async invalidateRefreshToken(token: string) {
     return await prisma.refreshToken.updateMany({
       where: { token },
+      data: { revoked: true },
+    });
+  }
+
+  async invalidateAllRefreshTokensByUserId(userId: number) {
+    return await prisma.refreshToken.updateMany({
+      where: { userId, revoked: false },
       data: { revoked: true },
     });
   }
