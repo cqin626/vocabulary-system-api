@@ -5,6 +5,18 @@ import {
   UnauthorizedError,
 } from "../../shared/errors/HTTPErrors.js";
 import argon2 from "argon2";
+import fs from "fs";
+import jwt from "jsonwebtoken";
+import ms from "ms";
+
+const privateKey = fs.readFileSync("private.pem", "utf-8");
+const publicKey = fs.readFileSync("public.pem", "utf-8");
+const signingAlgo = "RS256";
+
+type UserTokenType = {
+  id: number;
+  email: string;
+};
 
 export class AuthService {
   constructor(private readonly repo: AuthRepository) {}
@@ -22,19 +34,54 @@ export class AuthService {
     });
   }
 
-  async handleLogin(user: UserType) {
-    const userExists = await this.repo.userExists(user.email);
+  async verifyUser(user: UserType): Promise<UserTokenType> {
+    const foundUser = await this.repo.getUserDetails(user.email, {
+      id: true,
+      passwordHash: true,
+    });
 
-    if (!userExists) throw new UnauthorizedError("User does not exist");
+    if (
+      !foundUser ||
+      !(await argon2.verify(foundUser.passwordHash, user.password))
+    )
+      throw new UnauthorizedError("Invalid email or password");
 
-    const passwordHash = await this.repo.getUserPasswordHash(user.email);
-    const isValidPassword = await argon2.verify(passwordHash, user.password);
+    return {
+      id: foundUser.id,
+      email: user.email,
+    };
+  }
 
-    if (!isValidPassword) throw new UnauthorizedError("Invalid password");
+  generateAccessToken(payload: UserTokenType) {
+    const expiresIn = "10m";
+    const expiresAt = new Date(Date.now() + ms(expiresIn));
+    const accessToken = jwt.sign(payload, privateKey, {
+      algorithm: signingAlgo,
+      expiresIn: expiresIn,
+    });
 
-    // Grant access and refresh tokens
-    //  Return true at the moment first
-    return true;
+    return { accessToken, expiresAt };
+  }
+
+  async generateRefreshToken(payload: UserTokenType) {
+    const expiresIn = "7d";
+    const expiresAt = new Date(Date.now() + ms(expiresIn));
+    const refreshToken = jwt.sign(payload, privateKey, {
+      algorithm: signingAlgo,
+      expiresIn: expiresIn,
+    });
+
+    await this.repo.createRefreshToken(refreshToken, payload.id, expiresAt);
+
+    return { refreshToken, expiresAt };
+  }
+
+  async invalidateRefreshToken(refreshToken: string) {
+    await this.repo.invalidateRefreshToken(refreshToken);
+  }
+
+  verifyToken(token: string) {
+    return jwt.verify(token, publicKey, { algorithms: [signingAlgo] });
   }
 }
 

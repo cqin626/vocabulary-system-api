@@ -13,5 +13,8 @@ dist/
 # Environment variables
 .env
 
+# Public and private keys
+*.pem
+
 # Prisma
 /src/generated/prisma

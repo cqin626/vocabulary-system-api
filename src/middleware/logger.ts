@@ -1,6 +1,5 @@
 import pino, { TransportTargetOptions } from "pino";
 
-// Security concerns are not considered for the current version (sensitive fields should be redacted)
 const transports: TransportTargetOptions[] = [
   {
     target: "pino-pretty",
@@ -15,4 +14,7 @@ const transports: TransportTargetOptions[] = [
   },
 ];
 
-export const logger = pino(pino.transport({ targets: transports }));
+export const logger = pino(
+  { redact: ["req.headers.cookie", "res.headers.set-cookie"] },
+  pino.transport({ targets: transports })
+);
