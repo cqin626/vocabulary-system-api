@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { publicKey, signingAlgo } from "../config/jwtConfig.js";
+import { publicKey, signingAlgo } from "../config/jwt.js";
 import { UserTokenSchema } from "../shared/types/userTypes.js";
 import {
   UnauthorizedError,

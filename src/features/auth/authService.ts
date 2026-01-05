@@ -8,7 +8,7 @@ import {
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import ms from "ms";
-import { privateKey, publicKey, signingAlgo } from "../../config/jwtConfig.js";
+import { privateKey, publicKey, signingAlgo } from "../../config/jwt.js";
 import {
   UserTokenType,
   UserTokenSchema,
