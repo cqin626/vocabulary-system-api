@@ -5,18 +5,10 @@ import {
   UnauthorizedError,
 } from "../../shared/errors/HTTPErrors.js";
 import argon2 from "argon2";
-import fs from "fs";
 import jwt from "jsonwebtoken";
 import ms from "ms";
-
-const privateKey = fs.readFileSync("private.pem", "utf-8");
-const publicKey = fs.readFileSync("public.pem", "utf-8");
-const signingAlgo = "RS256";
-
-type UserTokenType = {
-  id: number;
-  email: string;
-};
+import { privateKey, signingAlgo } from "../../config/jwtConfig.js";
+import { UserTokenType } from "../../shared/types/userTypes.js";
 
 export class AuthService {
   constructor(private readonly repo: AuthRepository) {}
@@ -78,10 +70,6 @@ export class AuthService {
 
   async invalidateRefreshToken(refreshToken: string) {
     await this.repo.invalidateRefreshToken(refreshToken);
-  }
-
-  verifyToken(token: string) {
-    return jwt.verify(token, publicKey, { algorithms: [signingAlgo] });
   }
 }
 

@@ -15,6 +15,12 @@ const transports: TransportTargetOptions[] = [
 ];
 
 export const logger = pino(
-  { redact: ["req.headers.cookie", "res.headers.set-cookie"] },
+  {
+    redact: [
+      "req.headers.cookie",
+      "res.headers.set-cookie",
+      "req.headers.authorization",
+    ],
+  },
   pino.transport({ targets: transports })
 );
