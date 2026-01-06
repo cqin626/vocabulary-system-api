@@ -7,6 +7,8 @@ const router = express.Router();
 router.use(verifyAuthentication);
 
 router.route("/").post(userTermManagementController.addUserTerm);
-router.route("/:text").get(userTermManagementController.getTerm);
+router
+  .route("/:text")
+  .get(userTermManagementController.getTermWithUserTermDetails);
 
 export default router;

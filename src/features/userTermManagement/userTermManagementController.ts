@@ -4,14 +4,23 @@ import {
   UserTermManagementService,
 } from "./userTermManagementService.js";
 import { z } from "zod";
+import { UnauthorizedError } from "../../shared/errors/HTTPErrors.js";
 import { sendSuccess } from "../../shared/utils/responseUtils.js";
 
 export class UserTermManagementController {
   constructor(private readonly userTermService: UserTermManagementService) {}
 
-  getTerm = async (req: Request, res: Response) => {
+  getTermWithUserTermDetails = async (req: Request, res: Response) => {
     const text = z.string().trim().min(1).max(128).parse(req.params.text);
-    const term = await this.userTermService.getTerm(text);
+    const userId = req.user?.id;
+
+    if (!userId)
+      throw new UnauthorizedError("Authentication is required to proceed");
+
+    const term = await this.userTermService.getTermWithUserTermDetails(
+      text,
+      userId
+    );
 
     return sendSuccess(res, term, 200);
   };
@@ -26,9 +35,12 @@ export class UserTermManagementController {
       termId: req.body?.termId,
     });
 
-    const addedUserTerm = await this.userTermService.addUserTerm(userId, termId);
+    const addedUserTerm = await this.userTermService.addUserTerm(
+      userId,
+      termId
+    );
 
-    return sendSuccess(res, addedUserTerm, 201)
+    return sendSuccess(res, addedUserTerm, 201);
   };
 }
 

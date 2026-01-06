@@ -30,7 +30,7 @@ export class UserTermManagementService {
     private readonly userTermRepo: UserTermManagementRepository
   ) {}
 
-  async getTerm(text: string) {
+  private async getTerm(text: string) {
     const [foundTerm, err] = await safePromise(
       this.termService.getTermByText(text)
     );
@@ -56,6 +56,16 @@ export class UserTermManagementService {
 
     // Insert only if truly new
     return this.termService.insertTerm(aiGeneratedTerm);
+  }
+
+  async getTermWithUserTermDetails(text: string, userId: number) {
+    const term = await this.getTerm(text);
+    const userTerm = await this.userTermRepo.getUserTermDetails(
+      term.id,
+      userId,
+      userTermSelect
+    );
+    return { ...term, userTerm: userTerm };
   }
 
   async addUserTerm(userId: number, termId: number) {
