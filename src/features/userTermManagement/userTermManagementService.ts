@@ -35,20 +35,27 @@ export class UserTermManagementService {
       this.termService.getTermByText(text)
     );
 
-    if (err instanceof ResourceNotFoundError) {
-      const aiGeneratedTerm = await this.generationService.generateTerm(text);
+    if (foundTerm) return foundTerm;
 
-      if (aiGeneratedTerm) {
-        const newTerm = await this.termService.insertTerm(aiGeneratedTerm);
-        return newTerm;
-      } else {
-        throw new ResourceNotFoundError("Invalid term");
-      }
+    if (!(err instanceof ResourceNotFoundError)) {
+      throw err;
     }
 
-    if (err) throw err;
+    const aiGeneratedTerm = await this.generationService.generateTerm(text);
 
-    return foundTerm;
+    if (!aiGeneratedTerm) {
+      throw new ResourceNotFoundError("Invalid term");
+    }
+
+    // User may enter misspelled word, and the corrected word by ai during term generation may already exists in the database
+    const [correctedTerm, correctedErr] = await safePromise(
+      this.termService.getTermByText(aiGeneratedTerm.text)
+    );
+
+    if (correctedTerm) return correctedTerm;
+
+    // Insert only if truly new
+    return this.termService.insertTerm(aiGeneratedTerm);
   }
 
   async addUserTerm(userId: number, termId: number) {
