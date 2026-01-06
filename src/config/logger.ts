@@ -1,8 +1,15 @@
 import pino, { TransportTargetOptions } from "pino";
 
+const redactList = [
+  "req.headers.cookie",
+  "res.headers.set-cookie",
+  "req.headers.authorization",
+];
+
 const transports: TransportTargetOptions[] = [
   {
     target: "pino-pretty",
+    level: "debug",
     options: {
       translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
       ignore: "pid,hostname",
@@ -16,11 +23,7 @@ const transports: TransportTargetOptions[] = [
 
 export const logger = pino(
   {
-    redact: [
-      "req.headers.cookie",
-      "res.headers.set-cookie",
-      "req.headers.authorization",
-    ],
+    redact: redactList,
   },
   pino.transport({ targets: transports })
 );

@@ -13,7 +13,10 @@ model Term {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  senses Sense[]
+  senses    Sense[]
+  userTerms UserTerm[]
+
+  @@index([text])
 }
 
 model Sense {
@@ -39,12 +42,14 @@ model SenseExample {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String         @unique
-  passwordHash  String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
   refreshTokens RefreshToken[]
+  userTerms     UserTerm[]
 
   @@index([email])
 }
@@ -62,6 +67,19 @@ model RefreshToken {
   @@index([userId])
 }
 
+model UserTerm {
+  id          Int                 @id @default(autoincrement())
+  userId      Int
+  termId      Int
+  familiarity UserTermFamiliarity
+  createdAt   DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  term Term @relation(fields: [termId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, termId])
+}
+
 enum SenseType {
   NOUN
   VERB
@@ -74,4 +92,10 @@ enum SenseType {
   PHRASAL_VERB
   IDIOM
   PHRASE
+}
+
+enum UserTermFamiliarity {
+  NEW
+  RECOGNIZED
+  FAMILIAR
 }

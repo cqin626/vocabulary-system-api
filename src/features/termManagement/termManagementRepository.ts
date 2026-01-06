@@ -1,11 +1,12 @@
 import { prisma } from "../../config/prisma.js";
-import { NewTerm } from "../../shared/types/termTypes.js";
+import { Prisma } from "../../generated/prisma/client.js";
+import { TermType } from "../../shared/types/termTypes.js";
 
 export class TermManagementRepository {
-  async getTermByText(text: string) {
+  async getTermByText(text: string, select: Prisma.TermSelect) {
     return await prisma.term.findUnique({
       where: { text },
-      include: { senses: { include: { examples: true } } },
+      select,
     });
   }
 
@@ -25,7 +26,7 @@ export class TermManagementRepository {
     return termCount > 0;
   }
 
-  async insertTerm(newTerm: NewTerm) {
+  async insertTerm(newTerm: TermType, select: Prisma.TermSelect) {
     return await prisma.term.create({
       data: {
         text: newTerm.text,
@@ -41,11 +42,7 @@ export class TermManagementRepository {
           })),
         },
       },
-      include: {
-        senses: {
-          include: { examples: true },
-        },
-      },
+      select,
     });
   }
 }

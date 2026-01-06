@@ -17,7 +17,7 @@ const SenseTypeEnum = z.enum(
   "Sense type must be valid"
 );
 
-const NewSenseSchema = z.object({
+const SenseSchema = z.object({
   type: SenseTypeEnum,
   definition: z.string().trim().min(1, "Sense definition cannot be empty"),
   examples: z
@@ -25,11 +25,11 @@ const NewSenseSchema = z.object({
     .min(1, "At least one example is required"),
 });
 
-export const NewTermSchema = z.object({
+export const TermSchema = z.object({
   text: z.string().trim().min(1, "Term text cannot be empty"),
-  senses: z.array(NewSenseSchema).min(1, "At least one sense is required"),
+  senses: z.array(SenseSchema).min(1, "At least one sense is required"),
 });
 
-export type SenseType = z.infer<typeof SenseTypeEnum>;
-export type NewSense = z.infer<typeof NewSenseSchema>;
-export type NewTerm = z.infer<typeof NewTermSchema>;
+export type SenseTypeEnum = z.infer<typeof SenseTypeEnum>;
+export type SenseType = z.infer<typeof SenseSchema>;
+export type TermType = z.infer<typeof TermSchema>;

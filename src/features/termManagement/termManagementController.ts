@@ -5,7 +5,7 @@ import {
   termManagementService,
 } from "./termManagementService.js";
 import { sendSuccess } from "../../shared/utils/responseUtils.js";
-import { NewTermSchema } from "../../shared/types/termTypes.js";
+import { TermSchema } from "../../shared/types/termTypes.js";
 
 export class TermManagementController {
   constructor(private readonly service: TermManagementService) {}
@@ -23,13 +23,13 @@ export class TermManagementController {
       limit: z.coerce.number().int().min(1).max(100).default(10),
     });
     const { page, limit } = querySchema.parse(req.query);
-    const terms = await this.service.getTerms(page, limit);
+    const terms = await this.service.getTermsWithMetadata(page, limit);
 
     return sendSuccess(res, terms, 200);
   };
 
   insertTerm = async (req: Request, res: Response) => {
-    const newTerm = NewTermSchema.parse(req.body);
+    const newTerm = TermSchema.parse(req.body);
     const term = await this.service.insertTerm(newTerm);
 
     return sendSuccess(res, term, 201);

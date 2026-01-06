@@ -1,6 +1,6 @@
 import express from "express";
 import { pinoHttp } from "pino-http";
-import { logger } from "./middleware/logger.js";
+import { logger } from "./config/logger.js";
 import routerV1 from "./routes/routeV1.js";
 import { sendError } from "./shared/utils/responseUtils.js";
 import { errorHandler } from "./middleware/errorHandler.js";
