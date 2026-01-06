@@ -4,8 +4,9 @@ import { verifyAuthentication } from "../middleware/accessVerifier.js";
 
 const router = express.Router();
 
-// router.use(verifyAuthentication);
+router.use(verifyAuthentication);
 
+router.route("/").post(userTermManagementController.addUserTerm);
 router.route("/:text").get(userTermManagementController.getTerm);
 
 export default router;

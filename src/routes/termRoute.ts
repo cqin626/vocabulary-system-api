@@ -4,7 +4,7 @@ import { verifyAuthentication } from "../middleware/accessVerifier.js";
 
 const router = express.Router();
 
-// router.use(verifyAuthentication);
+router.use(verifyAuthentication);
 
 router
   .route("/")

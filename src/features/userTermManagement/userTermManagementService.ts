@@ -16,6 +16,13 @@ import {
 } from "../../shared/errors/HTTPErrors.js";
 import { safePromise } from "../../shared/utils/promiseUtils.js";
 
+const userTermSelect = {
+  userId: true,
+  termId: true,
+  familiarity: true,
+  createdAt: true,
+};
+
 export class UserTermManagementService {
   constructor(
     private readonly generationService: AITermGenerationService,
@@ -42,6 +49,22 @@ export class UserTermManagementService {
     if (err) throw err;
 
     return foundTerm;
+  }
+
+  async addUserTerm(userId: number, termId: number) {
+    const userTermExists = await this.userTermRepo.userTermExists(
+      userId,
+      termId
+    );
+
+    if (userTermExists)
+      throw new ConflictError("Term already added by the user");
+
+    return await this.userTermRepo.insertUserTerm(
+      userId,
+      termId,
+      userTermSelect
+    );
   }
 }
 

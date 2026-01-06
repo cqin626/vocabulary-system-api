@@ -15,6 +15,21 @@ export class UserTermManagementController {
 
     return sendSuccess(res, term, 200);
   };
+
+  addUserTerm = async (req: Request, res: Response) => {
+    const userTermSchema = z.object({
+      userId: z.coerce.number().int(),
+      termId: z.coerce.number().int(),
+    });
+    const { userId, termId } = userTermSchema.parse({
+      userId: req.user?.id,
+      termId: req.body?.termId,
+    });
+
+    const addedUserTerm = await this.userTermService.addUserTerm(userId, termId);
+
+    return sendSuccess(res, addedUserTerm, 201)
+  };
 }
 
 export const userTermManagementController = new UserTermManagementController(

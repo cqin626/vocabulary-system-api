@@ -71,7 +71,7 @@ model UserTerm {
   id          Int                 @id @default(autoincrement())
   userId      Int
   termId      Int
-  familiarity UserTermFamiliarity
+  familiarity UserTermFamiliarity @default(NEW)
   createdAt   DateTime            @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

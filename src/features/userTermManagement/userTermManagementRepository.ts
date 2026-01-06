@@ -17,6 +17,30 @@ export class UserTermManagementRepository {
       select: select,
     });
   }
+
+  async userTermExists(userId: number, termId: number) {
+    const userTermCount = await prisma.userTerm.count({
+      where: {
+        userId,
+        termId,
+      },
+    });
+    return userTermCount > 0;
+  }
+
+  async insertUserTerm(
+    userId: number,
+    termId: number,
+    select: Prisma.UserTermSelect
+  ) {
+    return await prisma.userTerm.create({
+      data: {
+        userId,
+        termId,
+      },
+      select,
+    });
+  }
 }
 
 export const userTermManagementRepo = new UserTermManagementRepository();

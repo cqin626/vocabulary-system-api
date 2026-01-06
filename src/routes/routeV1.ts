@@ -1,7 +1,7 @@
 import express from "express";
 import termRouter from "./termRoute.js";
 import authRouter from "./authRoute.js";
-import userTermManagementRouter from "./userTermManagementRoute.js";
+import userTermManagementRouter from "./userTermRoute.js";
 
 const router = express.Router();
 
