@@ -9,7 +9,9 @@ router.use(verifyAuthentication);
 router
   .route("/")
   .get(userTermManagementController.getUserTermsWithTermDetails)
-  .post(userTermManagementController.addUserTerm);
+  .post(userTermManagementController.addUserTerm)
+  .delete(userTermManagementController.deleteUserTerm);
+
 router
   .route("/:text")
   .get(userTermManagementController.getTermWithUserTermDetails);

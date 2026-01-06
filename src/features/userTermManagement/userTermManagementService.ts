@@ -98,6 +98,17 @@ export class UserTermManagementService {
       userTermSelect
     );
   }
+
+  async deleteUserTerm(userId: number, termId: number) {
+    const userTermExists = await this.userTermRepo.userTermExists(
+      userId,
+      termId
+    );
+
+    if (userTermExists) {
+      return await this.userTermRepo.deleteUserTerm(userId, termId);
+    } else throw new ResourceNotFoundError("UserTerm does not exist");
+  }
 }
 
 export const userTermManagementService = new UserTermManagementService(

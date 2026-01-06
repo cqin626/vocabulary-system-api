@@ -7,6 +7,10 @@ import { z } from "zod";
 import { UnauthorizedError } from "../../shared/errors/HTTPErrors.js";
 import { sendSuccess } from "../../shared/utils/responseUtils.js";
 
+const userTermSchema = z.object({
+  userId: z.coerce.number().int(),
+  termId: z.coerce.number().int(),
+});
 export class UserTermManagementController {
   constructor(private readonly userTermService: UserTermManagementService) {}
 
@@ -30,6 +34,7 @@ export class UserTermManagementController {
 
     if (!userId)
       throw new UnauthorizedError("Authentication is required to proceed");
+
     const querySchema = z.object({
       page: z.coerce.number().int().min(1).default(1),
       limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -46,10 +51,6 @@ export class UserTermManagementController {
   };
 
   addUserTerm = async (req: Request, res: Response) => {
-    const userTermSchema = z.object({
-      userId: z.coerce.number().int(),
-      termId: z.coerce.number().int(),
-    });
     const { userId, termId } = userTermSchema.parse({
       userId: req.user?.id,
       termId: req.body?.termId,
@@ -61,6 +62,20 @@ export class UserTermManagementController {
     );
 
     return sendSuccess(res, addedUserTerm, 201);
+  };
+
+  deleteUserTerm = async (req: Request, res: Response) => {
+    const { userId, termId } = userTermSchema.parse({
+      userId: req.user?.id,
+      termId: req.body?.termId,
+    });
+
+    const deletedTerm = await this.userTermService.deleteUserTerm(
+      userId,
+      termId
+    );
+
+    return sendSuccess(res, deletedTerm, 200);
   };
 }
 

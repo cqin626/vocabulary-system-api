@@ -80,6 +80,17 @@ export class UserTermManagementRepository {
       select,
     });
   }
+
+  async deleteUserTerm(userId: number, termId: number) {
+    return await prisma.userTerm.delete({
+      where: {
+        userId_termId: {
+          termId,
+          userId,
+        },
+      },
+    });
+  }
 }
 
 export const userTermManagementRepo = new UserTermManagementRepository();
