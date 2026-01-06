@@ -1,6 +1,6 @@
 import { prisma } from "../../config/prisma.js";
 import { Prisma } from "../../generated/prisma/client.js";
-
+import { UserTermFamiliarityEnum } from "../../shared/types/userTermTypes.js";
 export class UserTermManagementRepository {
   async getUserTermDetails(
     termId: number,
@@ -88,6 +88,24 @@ export class UserTermManagementRepository {
           termId,
           userId,
         },
+      },
+    });
+  }
+
+  async updateUserTermFamiliarity(
+    userId: number,
+    termId: number,
+    familiarity: UserTermFamiliarityEnum
+  ) {
+    return await prisma.userTerm.update({
+      where: {
+        userId_termId: {
+          termId,
+          userId,
+        },
+      },
+      data: {
+        familiarity: familiarity,
       },
     });
   }

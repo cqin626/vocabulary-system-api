@@ -10,6 +10,7 @@ router
   .route("/")
   .get(userTermManagementController.getUserTermsWithTermDetails)
   .post(userTermManagementController.addUserTerm)
+  .put(userTermManagementController.updateUserTermFamiliarity)
   .delete(userTermManagementController.deleteUserTerm);
 
 router

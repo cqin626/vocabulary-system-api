@@ -6,6 +6,7 @@ import {
 import { z } from "zod";
 import { UnauthorizedError } from "../../shared/errors/HTTPErrors.js";
 import { sendSuccess } from "../../shared/utils/responseUtils.js";
+import { UserTermFamiliarityEnumSchema } from "../../shared/types/userTermTypes.js";
 
 const userTermSchema = z.object({
   userId: z.coerce.number().int(),
@@ -76,6 +77,25 @@ export class UserTermManagementController {
     );
 
     return sendSuccess(res, deletedTerm, 200);
+  };
+
+  updateUserTermFamiliarity = async (req: Request, res: Response) => {
+    const { userId, termId } = userTermSchema.parse({
+      userId: req.user?.id,
+      termId: req.body?.termId,
+    });
+
+    const familiarity = UserTermFamiliarityEnumSchema.parse(
+      req.body?.familiarity
+    );
+
+    const updatedTerm = await this.userTermService.updateUserTermFamiliarity(
+      userId,
+      termId,
+      familiarity
+    );
+
+    return sendSuccess(res, updatedTerm, 200);
   };
 }
 

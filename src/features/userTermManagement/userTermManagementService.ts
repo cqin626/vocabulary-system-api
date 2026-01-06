@@ -16,6 +16,7 @@ import {
 } from "../../shared/errors/HTTPErrors.js";
 import { safePromise } from "../../shared/utils/promiseUtils.js";
 import { Prisma } from "../../generated/prisma/client.js";
+import { UserTermFamiliarityEnum } from "../../shared/types/userTermTypes.js";
 
 const userTermSelect = {
   userId: true,
@@ -107,6 +108,25 @@ export class UserTermManagementService {
 
     if (userTermExists) {
       return await this.userTermRepo.deleteUserTerm(userId, termId);
+    } else throw new ResourceNotFoundError("UserTerm does not exist");
+  }
+
+  async updateUserTermFamiliarity(
+    userId: number,
+    termId: number,
+    familiarity: UserTermFamiliarityEnum
+  ) {
+    const userTermExists = await this.userTermRepo.userTermExists(
+      userId,
+      termId
+    );
+
+    if (userTermExists) {
+      return await this.userTermRepo.updateUserTermFamiliarity(
+        userId,
+        termId,
+        familiarity
+      );
     } else throw new ResourceNotFoundError("UserTerm does not exist");
   }
 }
