@@ -25,6 +25,26 @@ export class UserTermManagementController {
     return sendSuccess(res, term, 200);
   };
 
+  getUserTermsWithTermDetails = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+
+    if (!userId)
+      throw new UnauthorizedError("Authentication is required to proceed");
+    const querySchema = z.object({
+      page: z.coerce.number().int().min(1).default(1),
+      limit: z.coerce.number().int().min(1).max(100).default(10),
+    });
+    const { page, limit } = querySchema.parse(req.query);
+
+    const userTermsWithTermDetails =
+      await this.userTermService.getUserTermsWithTermDetails(userId, {
+        page,
+        limit,
+      });
+
+    return sendSuccess(res, userTermsWithTermDetails, 200);
+  };
+
   addUserTerm = async (req: Request, res: Response) => {
     const userTermSchema = z.object({
       userId: z.coerce.number().int(),

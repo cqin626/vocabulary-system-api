@@ -6,7 +6,10 @@ const router = express.Router();
 
 router.use(verifyAuthentication);
 
-router.route("/").post(userTermManagementController.addUserTerm);
+router
+  .route("/")
+  .get(userTermManagementController.getUserTermsWithTermDetails)
+  .post(userTermManagementController.addUserTerm);
 router
   .route("/:text")
   .get(userTermManagementController.getTermWithUserTermDetails);

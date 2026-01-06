@@ -15,6 +15,7 @@ import {
   ConflictError,
 } from "../../shared/errors/HTTPErrors.js";
 import { safePromise } from "../../shared/utils/promiseUtils.js";
+import { Prisma } from "../../generated/prisma/client.js";
 
 const userTermSelect = {
   userId: true,
@@ -66,6 +67,20 @@ export class UserTermManagementService {
       userTermSelect
     );
     return { ...term, userTerm: userTerm };
+  }
+
+  async getUserTermsWithTermDetails(
+    userId: number,
+    options: { page: number; limit: number }
+  ) {
+    const defaultSort: Prisma.UserTermOrderByWithRelationInput = {
+      createdAt: "desc",
+    };
+    return await this.userTermRepo.getUserTermsWithTermDetails(userId, {
+      skip: (options.page - 1) * options.limit,
+      take: options.limit,
+      orderBy: defaultSort,
+    });
   }
 
   async addUserTerm(userId: number, termId: number) {

@@ -18,6 +18,45 @@ export class UserTermManagementRepository {
     });
   }
 
+  async getUserTermsWithTermDetails(
+    userId: number,
+    options: {
+      orderBy?:
+        | Prisma.UserTermOrderByWithRelationInput
+        | Prisma.UserTermOrderByWithRelationInput[];
+      skip: number;
+      take: number;
+    }
+  ) {
+    return await prisma.userTerm.findMany({
+      where: { userId },
+      select: {
+        term: {
+          select: {
+            id: true,
+            text: true,
+            senses: {
+              select: {
+                type: true,
+                definition: true,
+                examples: {
+                  select: {
+                    exampleSentence: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        familiarity: true,
+        createdAt: true,
+      },
+      ...(options.orderBy && { orderBy: options.orderBy }),
+      skip: options.skip,
+      take: options.take,
+    });
+  }
+
   async userTermExists(userId: number, termId: number) {
     const userTermCount = await prisma.userTerm.count({
       where: {
