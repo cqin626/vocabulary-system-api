@@ -16,7 +16,7 @@ import {
 } from "../../shared/errors/HTTPErrors.js";
 import { safePromise } from "../../shared/utils/promiseUtils.js";
 import { UserTermFamiliarityEnum } from "../../shared/types/userTermTypes.js";
-
+import { getNormalizedText } from "../../shared/utils/termUtils.js";
 const userTermSelect = {
   id: true,
   userId: true,
@@ -33,8 +33,9 @@ export class UserTermManagementService {
   ) {}
 
   private async getTerm(text: string) {
+    const normalizedText = getNormalizedText(text);
     const [foundTerm, err] = await safePromise(
-      this.termService.getTermByText(text)
+      this.termService.getTermByText(normalizedText)
     );
 
     if (foundTerm) return foundTerm;
@@ -43,7 +44,9 @@ export class UserTermManagementService {
       throw err;
     }
 
-    const aiGeneratedTerm = await this.generationService.generateTerm(text);
+    const aiGeneratedTerm = await this.generationService.generateTerm(
+      normalizedText
+    );
 
     if (!aiGeneratedTerm) {
       throw new ResourceNotFoundError("Invalid term");
@@ -61,7 +64,8 @@ export class UserTermManagementService {
   }
 
   async getTermWithUserTermDetails(text: string, userId: number) {
-    const term = await this.getTerm(text);
+    const normalizedText = getNormalizedText(text);
+    const term = await this.getTerm(normalizedText);
     const userTerm = await this.userTermRepo.getUserTermDetails(
       term.id,
       userId,

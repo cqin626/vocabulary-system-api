@@ -7,6 +7,7 @@ import {
   ConflictError,
 } from "../../shared/errors/HTTPErrors.js";
 import { TermType } from "../../shared/types/termTypes.js";
+import { getNormalizedText } from "../../shared/utils/termUtils.js";
 
 const termSelect = {
   id: true,
@@ -24,7 +25,8 @@ export class TermManagementService {
   constructor(private readonly repo: TermManagementRepository) {}
 
   async getTermByText(text: string) {
-    const term = await this.repo.getTermByText(text, termSelect);
+    const normalizedText = getNormalizedText(text);
+    const term = await this.repo.getTermByText(normalizedText, termSelect);
 
     if (!term) throw new ResourceNotFoundError("Term not found");
 
@@ -37,6 +39,7 @@ export class TermManagementService {
   }
 
   async insertTerm(newTerm: TermType) {
+    newTerm.text = getNormalizedText(newTerm.text);
     const termExists = await this.repo.termExists(newTerm.text);
 
     if (termExists) throw new ConflictError("Term already exists");

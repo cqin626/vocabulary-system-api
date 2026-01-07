@@ -1,6 +1,7 @@
 import { openaiClient, OpenAIClient } from "../../config/openAI.js";
 import { termGenerationPrompt } from "./aiTermGenerationPrompts.js";
 import { SenseType, TermType } from "../../shared/types/termTypes.js";
+import { getNormalizedText } from "../../shared/utils/termUtils.js";
 
 type ValidTerm = {
   isValidTerm: true;
@@ -31,7 +32,7 @@ export class AITermGenerationService {
 
     return generatedTerm?.isValidTerm
       ? {
-          text: generatedTerm.term,
+          text: getNormalizedText(generatedTerm.term),
           senses: generatedTerm.senses.map((sense) => ({
             type: sense.type,
             definition: sense.definition,
