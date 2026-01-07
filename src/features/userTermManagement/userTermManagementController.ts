@@ -36,16 +36,43 @@ export class UserTermManagementController {
     if (!userId)
       throw new UnauthorizedError("Authentication is required to proceed");
 
+    const sortableFields = z.enum(["createdAt", "familiarity", "text"]);
     const querySchema = z.object({
       page: z.coerce.number().int().min(1).default(1),
       limit: z.coerce.number().int().min(1).max(100).default(10),
+      sort: z
+        .string()
+        .optional()
+        .transform((orderyByString) => {
+          const defaultOrderBy: Record<string, "asc" | "desc">[] = [
+            { createdAt: "desc" },
+          ];
+          if (!orderyByString) return defaultOrderBy;
+          const processedOrderBy = orderyByString
+            .split(",")
+            .map((orderByItem) => {
+              const isDescending = orderByItem.startsWith("-");
+              const field = isDescending
+                ? orderByItem.substring(1)
+                : orderByItem;
+              const validatedField = sortableFields.safeParse(field);
+              if (!validatedField.success) return null;
+              return {
+                [validatedField.data]: isDescending ? "desc" : "asc",
+              } as Record<string, "asc" | "desc">;
+            })
+            .filter((x): x is Record<string, "asc" | "desc"> => x !== null);
+          return processedOrderBy.length > 0
+            ? processedOrderBy
+            : defaultOrderBy;
+        }),
     });
-    const { page, limit } = querySchema.parse(req.query);
-
+    const { page, limit, sort } = querySchema.parse(req.query);
     const userTermsWithTermDetails =
       await this.userTermService.getUserTermsWithTermDetails(userId, {
         page,
         limit,
+        sort,
       });
 
     return sendSuccess(res, userTermsWithTermDetails, 200);

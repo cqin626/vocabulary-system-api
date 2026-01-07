@@ -72,15 +72,16 @@ export class UserTermManagementService {
 
   async getUserTermsWithTermDetails(
     userId: number,
-    options: { page: number; limit: number }
+    options: {
+      page: number;
+      limit: number;
+      sort: Record<string, "asc" | "desc">[];
+    }
   ) {
-    const defaultSort: Prisma.UserTermOrderByWithRelationInput = {
-      createdAt: "desc",
-    };
     return await this.userTermRepo.getUserTermsWithTermDetails(userId, {
       skip: (options.page - 1) * options.limit,
       take: options.limit,
-      orderBy: defaultSort,
+      orderBy: options.sort,
     });
   }
 

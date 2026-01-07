@@ -21,13 +21,19 @@ export class UserTermManagementRepository {
   async getUserTermsWithTermDetails(
     userId: number,
     options: {
-      orderBy?:
-        | Prisma.UserTermOrderByWithRelationInput
-        | Prisma.UserTermOrderByWithRelationInput[];
+      orderBy: Record<string, "asc" | "desc">[];
       skip: number;
       take: number;
     }
   ) {
+    const formattedOrderBy: Prisma.UserTermOrderByWithRelationInput[] =
+      options.orderBy.map((orderByItem) => {
+        if ("text" in orderByItem)
+          return {
+            term: { text: orderByItem.text },
+          };
+        return orderByItem;
+      });
     return await prisma.userTerm.findMany({
       where: { userId },
       select: {
@@ -51,7 +57,7 @@ export class UserTermManagementRepository {
         familiarity: true,
         createdAt: true,
       },
-      ...(options.orderBy && { orderBy: options.orderBy }),
+      orderBy: formattedOrderBy,
       skip: options.skip,
       take: options.take,
     });
