@@ -40,6 +40,7 @@ export class UserTermManagementController {
     const querySchema = z.object({
       page: z.coerce.number().int().min(1).default(1),
       limit: z.coerce.number().int().min(1).max(100).default(10),
+      filter: UserTermFamiliarityEnumSchema.optional(),
       sort: z
         .string()
         .optional()
@@ -67,12 +68,13 @@ export class UserTermManagementController {
             : defaultOrderBy;
         }),
     });
-    const { page, limit, sort } = querySchema.parse(req.query);
+    const { page, limit, sort, filter } = querySchema.parse(req.query);
     const userTermsWithTermDetails =
       await this.userTermService.getUserTermsWithTermDetails(userId, {
         page,
         limit,
         sort,
+        filter,
       });
 
     return sendSuccess(res, userTermsWithTermDetails, 200);

@@ -24,6 +24,7 @@ export class UserTermManagementRepository {
       orderBy: Record<string, "asc" | "desc">[];
       skip: number;
       take: number;
+      filter: UserTermFamiliarityEnum | undefined;
     }
   ) {
     const formattedOrderBy: Prisma.UserTermOrderByWithRelationInput[] =
@@ -35,7 +36,10 @@ export class UserTermManagementRepository {
         return orderByItem;
       });
     return await prisma.userTerm.findMany({
-      where: { userId },
+      where: {
+        userId,
+        ...(options.filter ? { familiarity: options.filter } : {}),
+      },
       select: {
         term: {
           select: {

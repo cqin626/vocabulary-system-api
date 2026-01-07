@@ -15,7 +15,6 @@ import {
   ConflictError,
 } from "../../shared/errors/HTTPErrors.js";
 import { safePromise } from "../../shared/utils/promiseUtils.js";
-import { Prisma } from "../../generated/prisma/client.js";
 import { UserTermFamiliarityEnum } from "../../shared/types/userTermTypes.js";
 
 const userTermSelect = {
@@ -76,12 +75,14 @@ export class UserTermManagementService {
       page: number;
       limit: number;
       sort: Record<string, "asc" | "desc">[];
+      filter: UserTermFamiliarityEnum | undefined;
     }
   ) {
     return await this.userTermRepo.getUserTermsWithTermDetails(userId, {
       skip: (options.page - 1) * options.limit,
       take: options.limit,
       orderBy: options.sort,
+      filter: options.filter,
     });
   }
 
