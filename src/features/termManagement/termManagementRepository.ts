@@ -19,9 +19,12 @@ export class TermManagementRepository {
     });
   }
 
-  async termExists(text: string) {
+  async termExists(identifier: string | number) {
     const termCount = await prisma.term.count({
-      where: { text },
+      where:
+        typeof identifier === "string"
+          ? { text: identifier }
+          : { id: identifier },
     });
     return termCount > 0;
   }

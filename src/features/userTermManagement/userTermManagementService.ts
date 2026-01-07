@@ -87,11 +87,15 @@ export class UserTermManagementService {
   }
 
   async addUserTerm(userId: number, termId: number) {
+    const termExists = await this.termService.termExists(termId);
+    if (!termExists) {
+      throw new ConflictError("Term does not exist");
+    }
+    
     const userTermExists = await this.userTermRepo.userTermExists(
       userId,
       termId
     );
-
     if (userTermExists)
       throw new ConflictError("Term already added by the user");
 

@@ -45,6 +45,10 @@ export class TermManagementService {
 
     return term;
   }
+
+  async termExists(identifier: string | number) {
+    return await this.repo.termExists(identifier);
+  }
 }
 
 export const termManagementService = new TermManagementService(
