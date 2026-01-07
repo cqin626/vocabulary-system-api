@@ -91,7 +91,7 @@ export class UserTermManagementService {
     if (!termExists) {
       throw new ConflictError("Term does not exist");
     }
-    
+
     const userTermExists = await this.userTermRepo.userTermExists(
       userId,
       termId

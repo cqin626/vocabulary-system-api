@@ -41,6 +41,7 @@ export class UserTermManagementRepository {
         ...(options.filter ? { familiarity: options.filter } : {}),
       },
       select: {
+        id: true,
         term: {
           select: {
             id: true,
@@ -61,7 +62,7 @@ export class UserTermManagementRepository {
         familiarity: true,
         createdAt: true,
       },
-      orderBy: formattedOrderBy,
+      orderBy: [...formattedOrderBy, { id: "asc" }],
       skip: options.skip,
       take: options.take,
     });
