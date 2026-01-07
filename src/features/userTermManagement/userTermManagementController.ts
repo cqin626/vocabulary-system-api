@@ -56,10 +56,9 @@ export class UserTermManagementController {
               const field = isDescending
                 ? orderByItem.substring(1)
                 : orderByItem;
-              const validatedField = sortableFields.safeParse(field);
-              if (!validatedField.success) return null;
+              const validatedField = sortableFields.parse(field);
               return {
-                [validatedField.data]: isDescending ? "desc" : "asc",
+                [validatedField]: isDescending ? "desc" : "asc",
               } as Record<string, "asc" | "desc">;
             })
             .filter((x): x is Record<string, "asc" | "desc"> => x !== null);
