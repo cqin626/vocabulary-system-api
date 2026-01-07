@@ -18,6 +18,7 @@ import { safePromise } from "../../shared/utils/promiseUtils.js";
 import { UserTermFamiliarityEnum } from "../../shared/types/userTermTypes.js";
 
 const userTermSelect = {
+  id: true,
   userId: true,
   termId: true,
   familiarity: true,
