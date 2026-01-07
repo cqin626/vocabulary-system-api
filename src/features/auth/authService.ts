@@ -13,9 +13,13 @@ import {
   UserTokenType,
   UserTokenSchema,
 } from "../../shared/types/userTypes.js";
+import crypto from "crypto";
 
 export class AuthService {
   constructor(private readonly repo: AuthRepository) {}
+  private getRefreshTokenHash(refreshToken: string) {
+    return crypto.createHash("sha256").update(refreshToken).digest("hex");
+  }
 
   async registerUser(newUser: UserType) {
     const userExists = await this.repo.userExists(newUser.email);
@@ -66,18 +70,20 @@ export class AuthService {
       algorithm: signingAlgo,
       expiresIn: expiresIn,
     });
+    const refreshTokenHash = this.getRefreshTokenHash(refreshToken);
 
-    await this.repo.createRefreshToken(refreshToken, payload.id, expiresAt);
-
+    await this.repo.createRefreshToken(refreshTokenHash, payload.id, expiresAt);
     return { refreshToken, expiresAt };
   }
 
   async getRefreshTokenDetails(refreshToken: string) {
-    return await this.repo.getRefreshToken(refreshToken);
+    const refreshTokenHash = this.getRefreshTokenHash(refreshToken);
+    return await this.repo.getRefreshToken(refreshTokenHash);
   }
 
   async invalidateRefreshToken(refreshToken: string) {
-    await this.repo.invalidateRefreshToken(refreshToken);
+    const refreshTokenHash = this.getRefreshTokenHash(refreshToken);
+    await this.repo.invalidateRefreshToken(refreshTokenHash);
   }
 
   async invalidateAllRefreshTokensByUserId(userId: number) {

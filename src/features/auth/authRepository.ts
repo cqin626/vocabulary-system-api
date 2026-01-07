@@ -33,9 +33,9 @@ export class AuthRepository {
     });
   }
 
-  async getRefreshToken(token: string) {
+  async getRefreshToken(tokenHash: string) {
     return await prisma.refreshToken.findFirst({
-      where: { token },
+      where: { token: tokenHash },
       select: {
         token: true,
         expiresAt: true,
@@ -44,19 +44,19 @@ export class AuthRepository {
     });
   }
 
-  async createRefreshToken(token: string, userId: number, expiresAt: Date) {
+  async createRefreshToken(tokenHash: string, userId: number, expiresAt: Date) {
     return await prisma.refreshToken.create({
       data: {
-        token,
+        token: tokenHash,
         userId,
         expiresAt,
       },
     });
   }
 
-  async invalidateRefreshToken(token: string) {
+  async invalidateRefreshToken(tokenHash: string) {
     return await prisma.refreshToken.updateMany({
-      where: { token },
+      where: { token: tokenHash },
       data: { revoked: true },
     });
   }
