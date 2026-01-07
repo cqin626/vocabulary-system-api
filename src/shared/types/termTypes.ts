@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const SenseTypeEnum = z.enum(
+const SenseTypeEnumSchema = z.enum(
   [
     "NOUN",
     "VERB",
@@ -18,7 +18,7 @@ const SenseTypeEnum = z.enum(
 );
 
 const SenseSchema = z.object({
-  type: SenseTypeEnum,
+  type: SenseTypeEnumSchema,
   definition: z.string().trim().min(1, "Sense definition cannot be empty"),
   examples: z
     .array(z.string().trim().min(1))
@@ -30,6 +30,6 @@ export const TermSchema = z.object({
   senses: z.array(SenseSchema).min(1, "At least one sense is required"),
 });
 
-export type SenseTypeEnum = z.infer<typeof SenseTypeEnum>;
+export type SenseTypeEnum = z.infer<typeof SenseTypeEnumSchema>;
 export type SenseType = z.infer<typeof SenseSchema>;
 export type TermType = z.infer<typeof TermSchema>;

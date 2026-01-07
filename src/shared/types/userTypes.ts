@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const UserRoleEnumSchema = z.enum(["ADMIN", "USER"]);
+
 export const UserSchema = z.object({
   email: z.email(),
   password: z
@@ -10,6 +12,7 @@ export const UserSchema = z.object({
 export const UserTokenSchema = z.object({
   id: z.number(),
   email: z.string(),
+  role: UserRoleEnumSchema,
 });
 
 export type UserType = z.infer<typeof UserSchema>;

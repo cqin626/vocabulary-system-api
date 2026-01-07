@@ -28,3 +28,15 @@ export function verifyAuthentication(
     throw new ForbiddenError("Invalid access token");
   }
 }
+
+export function verifyAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    throw new UnauthorizedError("Authentication required");
+  }
+
+  if (req.user.role !== "ADMIN") {
+    throw new ForbiddenError("Access denied: Admin privileges required");
+  }
+  
+  next();
+}

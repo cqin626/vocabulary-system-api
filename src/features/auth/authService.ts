@@ -38,6 +38,7 @@ export class AuthService {
     const foundUser = await this.repo.getUserDetails(user.email, {
       id: true,
       passwordHash: true,
+      role: true,
     });
 
     if (
@@ -49,6 +50,7 @@ export class AuthService {
     return {
       id: foundUser.id,
       email: user.email,
+      role: foundUser.role,
     };
   }
 

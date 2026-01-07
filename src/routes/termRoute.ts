@@ -1,10 +1,13 @@
 import express from "express";
 import { termManagementController } from "../features/termManagement/termManagementController.js";
-import { verifyAuthentication } from "../middleware/accessVerifier.js";
+import {
+  verifyAuthentication,
+  verifyAdmin,
+} from "../middleware/accessVerifier.js";
 
 const router = express.Router();
 
-router.use(verifyAuthentication);
+router.use(verifyAuthentication, verifyAdmin);
 
 router
   .route("/")
